@@ -368,7 +368,7 @@ class System {
 		case Move: MOVE;
 		case TextInput: TEXT;
 		case Hide: DEFAULT;
-		case Custom(_,_,_,_):
+		case Custom(_):
 			throw "not supported";
 		}
 		if( c == Hide ) lime.ui.Mouse.hide() else lime.ui.Mouse.show();

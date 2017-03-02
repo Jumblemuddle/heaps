@@ -577,12 +577,12 @@ class GlDriver extends Driver {
 		}
 	}
 
-	function getChannels( t : Texture ) {
+	function getChannels( t : Texture ): Int {
 		return switch( t.internalFmt ) {
-		#if !js
+		#if (!js && !lime)
+		case GL.RGBA8: GL.BGRA;
 		case GL.RGBA32F, GL.RGBA16F: GL.RGBA;
 		case GL.ALPHA16F, GL.ALPHA32F: GL.ALPHA;
-		case GL.RGBA8: GL.BGRA;
 		#end
 		case GL.RGBA: GL.RGBA;
 		case GL.ALPHA: GL.ALPHA;
@@ -612,22 +612,43 @@ class GlDriver extends Driver {
 		case RGBA32F if( hasFeature(FloatTextures) ):
 			#if js
 			tt.pixelFmt = GL.FLOAT;
+			#elseif lime
+			tt.internalFmt = GL.RGBA;
+			tt.pixelFmt = GL.FLOAT;
 			#else
 			tt.internalFmt = GL.RGBA32F;
 			tt.pixelFmt = GL.FLOAT;
 			#end
 		#if !js
 		case BGRA:
+			#if lime
+			tt.internalFmt = GL.RGBA;
+			#else
 			tt.internalFmt = GL.RGBA8;
+			#end
 		case RGBA16F if( hasFeature(FloatTextures) ):
+			#if lime
+			tt.pixelFmt = GL.FLOAT;
+			tt.internalFmt = GL.RGBA;
+			#else
 			tt.pixelFmt = GL.HALF_FLOAT;
 			tt.internalFmt = GL.RGBA16F;
+			#end
 		case ALPHA16F if( hasFeature(FloatTextures) ):
+			#if lime
+			tt.pixelFmt = GL.FLOAT;
+			tt.internalFmt = GL.ALPHA;
+			#else
 			tt.pixelFmt = GL.HALF_FLOAT;
 			tt.internalFmt = GL.ALPHA16F;
+			#end
 		case ALPHA32F if( hasFeature(FloatTextures) ):
 			tt.pixelFmt = GL.FLOAT;
+			#if lime
+			tt.internalFmt = GL.ALPHA;
+			#else
 			tt.internalFmt = GL.ALPHA32F;
+			#end
 		#end
 		default:
 			throw "Unsupported texture format "+t.format;
